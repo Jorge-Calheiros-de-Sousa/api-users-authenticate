@@ -48,12 +48,12 @@ class AuthController extends Controller
 
             $permissions = ["server:update", "server:delete"];
 
-            if ($user->isAdmin) {
-                array_push($permissions, "server:list");
+            if (!$user) {
+                throw new Exception("Email ou senha incorretos");
             }
 
-            if (!$user) {
-                throw new Exception($user);
+            if ($user->isAdmin) {
+                array_push($permissions, "server:list");
             }
 
             return response()->json([
@@ -62,7 +62,9 @@ class AuthController extends Controller
                 'token' => $user->createToken($request->input("email"), $permissions)->plainTextToken,
             ]);
         } catch (\Throwable $th) {
-            return response($th->getMessage(),  self::STATUS_CODE_ERROR)->send();
+            return response()->json([
+                'message' => $th->getMessage()
+            ], self::STATUS_CODE_ERROR);
         }
     }
 

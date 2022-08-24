@@ -40,6 +40,7 @@ class AuthRequestLogin extends FormRequest
             return false;
         }
         $password = Hash::check($this->input('password'), $user->password);
+
         if ($user && $password) {
             return $user;
         }
